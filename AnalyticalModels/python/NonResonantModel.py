@@ -13,16 +13,23 @@ class NonResonantModel:
     def __init__(self):
         # read coefficients from the input file here
         # to store coefficients use self.
-        self.NCostHHbin=4
-        self.NMHHbin=55
         self.NCoef=15
+        
+        self.NCostHHbin=4
+        self.NMHHbin=59
         self.binGenMHH  = [ 250,260,270,280,290,300,310,320,330,340,
                                350,360,370,380,390,400,410,420,430,440, 
-                               450,460,470,480,490,
-                               500,510,520,530,540,550,600,610,620,630,
-                               640,650,660,670,680,690,700,750,800,850,
-                               900,950,1000,1100,1200,1300,1400,1500.,1750,2000,50000]
+                               450,460,470,480,490,500,510,520,530,540,
+                               550,560,570,580,590,600,610,620,630,640,
+                               650,660,670,680,690,700,750,800,850,900,
+                               950,1000,1100,1200,1300,1400,1500.,1750,2000,50000]
         self.binGenCostS  = [ 0.0,0.4,0.6,0.8, 1.0 ] #
+        """
+        self.NCostHHbin=3
+        self.NMHHbin=15
+        self.binGenMHH = [245.,270.,300.,330.,360.,390., 420.,450.,500.,550.,600.,700.,800.,1000.,1500.,50000]
+        self.binGenCostS  = [ -1., -0.55,0.55,1.  ]
+        """
         self.effSM = np.zeros((self.NCostHHbin,self.NMHHbin))
         self.effSum = np.zeros((self.NCostHHbin,self.NMHHbin))
         self.MHH = np.zeros((self.NCostHHbin,self.NMHHbin))
@@ -293,7 +300,7 @@ class NonResonantModel:
       plt.clf()   # Clear figure
       plt.close() 
       ###########################"
-      bin_size = 40; min_edge = 200; max_edge = 1500
+      bin_size = 40; min_edge = 200; max_edge = 1800
       N = (max_edge-min_edge)/bin_size; Nplus1 = N + 1
       bin_list = np.linspace(min_edge, max_edge, Nplus1)
       plt.subplots(figsize=(6, 6))
@@ -306,7 +313,7 @@ class NonResonantModel:
          plt.errorbar(mid, n, yerr=err, fmt='none', color= 'r', ecolor= 'r', edgecolor='r')
       plt.legend(loc='upper right',title=labeltext,fontsize = 'large')
       #plt.annotate(labeltext, xy=(0.05, 0.92), xycoords='axes fraction', **title_font)
-      plt.xlabel("$M (\gamma \gamma b \bar{b})$ (GeV)", **axis_font)
+      plt.xlabel("$MX (\gamma \gamma bb)$ (GeV)", **axis_font)
       plt.ylabel("a.u.", **axis_font)
       plt.savefig("Mhh_"+label+".pdf")
       plt.savefig("Mhh_"+label+".png")
@@ -314,12 +321,13 @@ class NonResonantModel:
       plt.cla()   # Clear axis
       plt.clf()   # Clear figure
       plt.close() 
-      bin_size = 40; min_edge = 200; max_edge = 1500
+      bin_size = 40; min_edge = 200; max_edge = 1600
       N = (max_edge-min_edge)/bin_size; Nplus1 = N + 1
       bin_list = np.linspace(min_edge, max_edge, Nplus1)
       plt.subplots(figsize=(6, 6))
       plt.xlim(min_edge, max_edge)
       plt.hist(CalcMXReco, bin_list, weights=CalcWeight*100000 ,  histtype='bar', label='reweigted', fill=False, color= 'g', edgecolor='g', lw=5 ,alpha = 1 )
+      plt.subplots_adjust(left=0.15, right=0.9, top=0.9, bottom=0.12)
       if drawtest>-1 : 
          n, bins, _ = plt.hist(CalcMXRecoTest, bin_list ,  histtype='bar', label='simulated', fill=False, color= 'r', edgecolor='r', lw=1 ,alpha = 1 )
          mid = 0.5*(bins[1:] + bins[:-1])
@@ -328,6 +336,7 @@ class NonResonantModel:
       plt.legend(loc='upper right',title=labeltext,fontsize = 'large')
       plt.xlabel("$M_{X}$ (GeV)", **axis_font)
       plt.ylabel("a.u.", **axis_font)
+      plt.ylim(0, 500)
       plt.savefig("MX_"+label+".pdf")
       plt.savefig("MX_"+label+".png")
       plt.subplots_adjust(left=0.1)
@@ -381,13 +390,14 @@ class NonResonantModel:
       plt.subplots(figsize=(6, 6))
       plt.xlim(min_edge, max_edge)
       plt.hist(CalcPtHH, bin_list, weights=CalcWeight*100000 , histtype='bar', label='reweigted', fill=False, color= 'g', edgecolor='g', lw=5 ,alpha = 1 )
+      plt.subplots_adjust(left=0.15, right=0.9, top=0.9, bottom=0.12)
       if drawtest>-1 : 
          n, bins, _ = plt.hist(CalcPtHHTest, bin_list ,  histtype='bar', label='simulated', fill=False,  color= 'r', edgecolor='r', lw=1 ,alpha = 1 )
          mid = 0.5*(bins[1:] + bins[:-1])
          err=np.sqrt(n)
          plt.errorbar(mid, n, yerr=err, fmt='none', color= 'r', ecolor= 'r', edgecolor='r')
       plt.legend(loc='upper right',title=labeltext,fontsize = 'large')
-      plt.xlabel("$p_{T} (\gamma \gamma b \bar{b}) $(GeV)", **axis_font)
+      plt.xlabel("$p_{T}^{\gamma \gamma b b} $(GeV)", **axis_font)
       plt.ylabel("a.u.", **axis_font)
       plt.savefig("PtHH_"+label+".pdf")
       plt.savefig("PtHH_"+label+".png")

@@ -38,7 +38,7 @@ def main():
   # obtaining BSM/SM coeficients
   #dumb = model.ReadCoefficients("../data/coefficientsByBin_A1A3A7.txt") 
   #dumb = model.ReadCoefficients("../data/coefficientsByBin_extended_3M.txt") 
-  dumb = model.ReadCoefficients("../data/coefficientsByBin_extended_3M_costHHSim_19-4.txt") 
+  dumb = model.ReadCoefficients("../data/coefficientsByBin_extended_3M_costHHSim_59-4.txt") 
   # We sum SM + box + the benchmarks from 2-13 
   # read the 2D histo referent to the sum of events
   """
@@ -46,7 +46,7 @@ def main():
   sumJHEPAnalyticalBin = fileHH.Get("H1bin2")
   SMAnalyticalBin = fileHH.Get("H0bin2")
   """
-  fileHH=ROOT.TFile("../../../Analysis/Support/NonResonant/Distros_5p_SM3M_sumBenchJHEP_13TeV_19-4.root") #Distros_5p_SM3M_sumBenchJHEP_13TeV.root") #Distros_5p_SM3M_rebin_sumBenchJHEP_5D_13TeV.root") #
+  fileHH=ROOT.TFile("../../../Analysis/Support/NonResonant/Distros_5p_SM3M_sumBenchJHEP_13TeV_59-4.root") #Distros_5p_SM3M_sumBenchJHEP_13TeV.root") #Distros_5p_SM3M_rebin_sumBenchJHEP_5D_13TeV.root") #
   #fileHH=ROOT.TFile("../../../Analysis/Support/NonResonant/Distros_5p_SM3M_rebin_sumBenchJHEP_5D_13TeV.root") 
   #sumJHEPAnalyticalBin = fileHH.Get("H1bin3")
   histfile = "../../../Analysis/Support/NonResonant/Distros_5p_SM3M_sumBenchJHEP_13TeV_19-4.root" #Distros_5p_SM3M_sumBenchJHEP_13TeV.root" # #Distros_5p_SM3M_rebin_sumBenchJHEP_5D_13TeV.root"
