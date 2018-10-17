@@ -1,4 +1,4 @@
-# CMS HH limit extraction and combination package
+# CMS HH limit extraction and combination package      
 
 The purpose of this package is to have centralized CMS HH code base for the limit extraction and combination between the different channels for both model independent and model dependent cases.
 
