@@ -36,7 +36,7 @@ print "Weights calculated from the 12 benchmarks defined in 1507.02245v4 (JHEP v
 ###########################################################
 def main():
   model = NonResonantModel()
-  model.ReadCoefficients2(options.energy)
+  model.ReadCoefficients2(options.energy, "/afs/cern.ch/work/a/acarvalh/CMSSW_8_1_0/")
   effSumV0 = 1.0
   Cnorm = 1.0
 
@@ -45,6 +45,11 @@ def main():
   histtitle= "SumV0_AnalyticalBinExtSimCostHH" #
   fileHH=ROOT.TFile(histfilename)
   sumHAnalyticalBin = fileHH.Get(histtitle)
+  kl = 1.0
+  kt = 1.0
+  c2 = 0.0
+  cg = 0.0
+  c2g = 0.0
   calcSumOfWeights = model.getNormalization2(kl, kt,c2,cg,c2g) #/model.neventHist
 
   inputSamples = "/eos/cms/store/user/acarvalh/asciiHH_tofit/GF_HH_BSM/events_SumV0.root" ## user input
@@ -54,7 +59,7 @@ def main():
   ## name the branches as bellow:
   ## branchGenmhh = "Genmhh"
   ## branchGenHHCost = "GenHHCost"
-  if not os.path.isfile(inputSamples) :
+  if not os.path.isfile("HistoInputEvents.root") :
       print ("creating histo for the denominator of the weights")
       model.getInputInHisto(inputSamples, inputSamplestree)
   fileAllHisto = ROOT.TFile("HistoInputEvents.root")
@@ -79,6 +84,7 @@ def main():
       mhh = event.Genmhh+0.01
       cost = abs(event.GenHHCost)
       weight = model.getScaleFactor2(mhh, cost, kl, kt,c2,cg,c2g, inputSamplesHisto)/calcSumOfWeights
+      #weight = model.getScaleFactor_fromSMonly(mhh, cost, kl, kt,c2,cg,c2g)/calcSumOfWeights
       #############################################
       # fill histograms to test
       #############################################

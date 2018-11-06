@@ -39,8 +39,8 @@ class NonResonantModel:
         470, 490, 510, 530, 550, 570, 590, 610, 630, 650, 670, 690, 710, 730, 750, 770,
         790, 810, 830, 850, 870, 890, 910, 930, 950, 970, 990, 1010, 1030, 10000] # 41
         self.fileCoef = ROOT.TFile()
-        self.fileCoef13TeV = ROOT.TFile("../data/Coefficients_13TeV.root")
-        self.fileCoef14TeV = ROOT.TFile("../data/Coefficients_14TeV.root")
+        self.fileCoef13TeV = 0
+        self.fileCoef14TeV = 0
         self.AbinHist = []
         self.AbinTot = []
         self.ANLO =  [[0 for MHHbin in range(len(self.binGenMHHNLO)-1)] for coef in range(self.NCoefNLO)]
@@ -79,7 +79,9 @@ class NonResonantModel:
           #countermhh = countermhh + 1
         print (len(self.ANLO), len(self.ANLO[0]), self.ANLO[0])
 
-    def ReadCoefficients2(self, energy) :
+    def ReadCoefficients2(self, energy, cms_base) :
+        self.fileCoef13TeV = ROOT.TFile(cms_base+"/src/HHStatAnalysis/AnalyticalModels/data/Coefficients_13TeV.root")
+        self.fileCoef14TeV = ROOT.TFile(cms_base+"/src/HHStatAnalysis/AnalyticalModels/data/Coefficients_14TeV.root")
         if energy == 13 :
             self.AbinTot = self.A13tev
             self.fileCoef = self.fileCoef13TeV
@@ -88,9 +90,9 @@ class NonResonantModel:
             self.fileCoef = self.fileCoef14TeV
         for coef in xrange(1,16) :
             histo = "A"+str(coef)+"_"+str(int(energy))+"TeV"
-            print ("append histos", histo)
             dumb = self.fileCoef.Get(histo)
             self.AbinHist.append(dumb)
+            print ("append histos", histo, dumb.Integral())
         print len(self.AbinTot)
 
     def getScaleFactor2(self, mhh, cost, kl, kt, c2, cg, c2g, inputSamplesHisto) :
@@ -104,8 +106,17 @@ class NonResonantModel:
           CalcWeight = self.functionGF(kl, kt, c2, cg, c2g, Abin)/effSumAll
           return CalcWeight
        else :
-           print (mhh, cost, "return 0")
+           print (mhh, cost, "return 0", effSumAll)
            return 0
+
+    def getScaleFactor_fromSMonly(self, mhh, cost, kl, kt, c2, cg, c2g) :
+       binmhh = self.AbinHist[0].GetXaxis().FindBin(mhh)
+       bincost = self.AbinHist[0].GetYaxis().FindBin(cost)
+       Abin=[]
+       for coef in range (0,15) :
+          Abin.append(self.AbinTot[coef]*self.AbinHist[coef].GetBinContent(binmhh, bincost))
+       CalcWeight = self.functionGF(kl, kt, c2, cg, c2g, Abin)
+       return CalcWeight
 
     def getNormalization2(self,kl, kt,c2,cg,c2g):
       sumOfWeights = 0
