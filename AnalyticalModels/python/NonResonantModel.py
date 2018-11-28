@@ -55,6 +55,8 @@ class NonResonantModel:
     # Declare the function
     def functionGF(self, kl,kt,c2,cg,c2g,A): return A[0]*kt**4 + A[1]*c2**2 + (A[2]*kt**2 + A[3]*cg**2)*kl**2  + A[4]*c2g**2 + ( A[5]*c2 + A[6]*kt*kl )*kt**2  + (A[7]*kt*kl + A[8]*cg*kl )*c2 + A[9]*c2*c2g  + (A[10]*cg*kl + A[11]*c2g)*kt**2+ (A[12]*kl*cg + A[13]*c2g )*kt*kl + A[14]*cg*c2g*kl
 
+    def functionGF2(self, kl,kt,c2,cg,c2g,A): return A[0]*kt**4 + (A[1]*kt**2)*kl**2 + ( A[2]*kt*kl )*kt**2
+
     def functionGFNLO(self, kl,kt,c2,cg,c2g,A):
         return A[0]*kt**4 + A[1]*c2**2 + (A[2]*kt**2 + A[3]*cg**2)*kl**2  +\
                A[4]*c2g**2 + ( A[5]*c2 + A[6]*kt*kl )*kt**2  + (A[7]*kt*kl + A[8]*cg*kl)*c2 +\
@@ -83,12 +85,12 @@ class NonResonantModel:
         self.fileCoef13TeV = ROOT.TFile(cms_base+"/src/HHStatAnalysis/AnalyticalModels/data/Coefficients_13TeV.root")
         self.fileCoef14TeV = ROOT.TFile(cms_base+"/src/HHStatAnalysis/AnalyticalModels/data/Coefficients_14TeV.root")
         if energy == 13 :
-            self.AbinTot = self.A13tev
+            self.AbinTot = [self.A13tev[0], self.A13tev[2], self.A13tev[6]]
             self.fileCoef = self.fileCoef13TeV
         if energy == 14 :
-            self.AbinTot = self.A14tev
+            self.AbinTot = [self.A14tev[0], self.A14tev[2], self.A14tev[6]]
             self.fileCoef = self.fileCoef14TeV
-        for coef in xrange(1,16) :
+        for coef in [1,3,7] :
             histo = "A"+str(coef)+"_"+str(int(energy))+"TeV"
             dumb = self.fileCoef.Get(histo)
             self.AbinHist.append(dumb)
@@ -101,9 +103,9 @@ class NonResonantModel:
        effSumAll = inputSamplesHisto.GetBinContent(binmhh, bincost)
        if effSumAll > 0 :
           Abin=[]
-          for coef in range (0,15) :
+          for coef in range (0,3) :
               Abin.append(self.AbinTot[coef]*self.AbinHist[coef].GetBinContent(binmhh, bincost))
-          CalcWeight = self.functionGF(kl, kt, c2, cg, c2g, Abin)/effSumAll
+          CalcWeight = self.functionGF2(kl, kt, c2, cg, c2g, Abin)/effSumAll
           return CalcWeight
        else :
            print (mhh, cost, "return 0", effSumAll)
@@ -113,21 +115,22 @@ class NonResonantModel:
        binmhh = self.AbinHist[0].GetXaxis().FindBin(mhh)
        bincost = self.AbinHist[0].GetYaxis().FindBin(cost)
        Abin=[]
-       for coef in range (0,15) :
+       for coef in range (0,len(self.AbinTot)) :
           Abin.append(self.AbinTot[coef]*self.AbinHist[coef].GetBinContent(binmhh, bincost))
-       CalcWeight = self.functionGF(kl, kt, c2, cg, c2g, Abin)
+       if len(len(self.AbinTot) == 15 ) : CalcWeight = self.functionGF(kl, kt, c2, cg, c2g, Abin)
+       if len(len(self.AbinTot) == 3 ) : CalcWeight = self.functionGF2(kl, kt, c2, cg, c2g, Abin)
        return CalcWeight
 
     def getNormalization2(self,kl, kt,c2,cg,c2g):
       sumOfWeights = 0
-      totCX = self.functionGF(kl,kt,c2,cg,c2g,self.AbinTot)
-      if self.functionGF(kl,kt,c2,cg,c2g,self.AbinTot) ==0 : print "total Cross Section = 0 , chose another point"
+      totCX = self.functionGF2(kl,kt,c2,cg,c2g,self.AbinTot)
+      if self.functionGF2(kl,kt,c2,cg,c2g,self.AbinTot) ==0 : print "total Cross Section = 0 , chose another point"
       for binmhh in range (1, self.AbinHist[0].GetNbinsX()+1) :
          for bincost in range (1, self.AbinHist[0].GetNbinsY()+1) :
             Abin=[]
-            for coef in range(0,15) :
+            for coef in range(0,3) :
                 Abin.append( self.AbinTot[coef]*self.AbinHist[coef].GetBinContent(binmhh, bincost) )
-            sumOfWeights += self.functionGF(kl,kt,c2,cg,c2g,Abin)/totCX
+            sumOfWeights += self.functionGF2(kl,kt,c2,cg,c2g,Abin)/totCX
       print ("calcSumOfWeights", sumOfWeights/self.neventHist)
       return (totCX*sumOfWeights) ## it takes into account the rest of the normalizations
 
